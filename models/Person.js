@@ -8,8 +8,8 @@ const PersonSchema = new mongoose.Schema(
     },
     picture: {
       type: String,
-      default: "/uploads/placeholder.png", // example
-      required: true,
+      // default: '/uploads/placeholder.png', // example
+      // required: true,
     },
     description: {
       type: String,
@@ -60,6 +60,9 @@ const PersonSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    cloudinaryId: {
+      type: String,
     },
     createdAt: {
       type: Date,

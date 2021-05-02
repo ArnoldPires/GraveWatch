@@ -50,7 +50,7 @@ app.use(passport.session());
 app.use(flash());
 
 app.use("/", mainRoutes);
-app.use("/persons", personRoutes);
+app.use("/persons", personRoutes); //this is attaching to the route, in persons.js
 
 const PORT = process.env.PORT;
 

@@ -12,6 +12,7 @@ exports.getLogin = (req, res) => {
 };
 
 exports.postLogin = (req, res, next) => {
+  console.log(req.body);
   const validationErrors = [];
   if (!validator.isEmail(req.body.email)) {
     validationErrors.push({ msg: "Please check if the email is valid." });
@@ -19,6 +20,12 @@ exports.postLogin = (req, res, next) => {
   if (validator.isEmpty(req.body.password)) {
     validationErrors.push({ msg: "Password field cannot be empty." });
   }
+
+  if (validationErrors.length) {
+    req.flash("errors", validationErrors);
+    return res.redirect("/login");
+  }
+
   req.body.email = validator.normalizeEmail(req.body.email, {
     gmail_remove_dots: false,
   });
@@ -28,9 +35,13 @@ exports.postLogin = (req, res, next) => {
       return next(err);
     }
     if (!user) {
+      console.log("not user");
+      req.flash("errors", info);
       return res.redirect("/login");
     }
     req.logIn(user, (err) => {
+      console.log(err);
+      console.log("We got user");
       if (err) {
         return next(err);
       }
@@ -66,7 +77,7 @@ exports.postSignup = (req, res, next) => {
     validationErrors.push({ msg: "Please enter a valid email address." });
   }
   if (!validator.isLength(req.body.password, { min: 8 })) {
-    validationError.push({
+    validationErrors.push({
       msg: "Password must be at least 8 characters long.",
     });
   }
@@ -84,6 +95,7 @@ exports.postSignup = (req, res, next) => {
   });
 
   const user = new User({
+    name: req.body.name,
     email: req.body.email,
     password: req.body.password,
   });
@@ -96,7 +108,7 @@ exports.postSignup = (req, res, next) => {
       req.flash("errors", {
         msg: "Account with that email address already exists.",
       });
-      return res.redirect("../signup");
+      return res.redirect("/signup");
     }
 
     user.save((err) => {
@@ -107,7 +119,8 @@ exports.postSignup = (req, res, next) => {
         if (err) {
           return next(err);
         }
-        res.redirect("/");
+        // res.redirect('/')
+        res.redirect("/profile");
       });
     });
   });

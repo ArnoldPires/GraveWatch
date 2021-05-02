@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 
 module.exports = function (passport) {
+  console.log("calling passport");
   passport.use(
     new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
       User.findOne({ email: email.toLowerCase() }, (err, user) => {
@@ -18,6 +19,7 @@ module.exports = function (passport) {
               "Your account was registered using a sign-in provider. To enable password login, sign in using a provider, and then set a password under your user profile.",
           });
         }
+        console.log(`passport received user: ${user}`);
         user.comparePassword(password, (err, isMatch) => {
           if (err) {
             return done(err);
@@ -32,10 +34,12 @@ module.exports = function (passport) {
   );
 
   passport.serializeUser((user, done) => {
+    console.log("serializing user");
     done(null, user.id);
   });
 
   passport.deserializeUser((id, done) => {
+    console.log("deserializing user");
     User.findById(id, (err, user) => done(err, user));
   });
 };

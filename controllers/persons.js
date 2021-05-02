@@ -1,4 +1,6 @@
 const Person = require("../models/Person");
+const User = require("../models/User");
+const cloudinary = require("../middleware/cloudinary");
 
 module.exports = {
   getAllPersons: async (req, res) => {
@@ -17,7 +19,7 @@ module.exports = {
     //filtering records
     console.log(req.user);
     try {
-      const PersonItems = await Person.find({ userId: req.user.id });
+      const PersonItems = await Person.find({ user: req.user._id });
       res.render("profile.ejs", { persons: PersonItems, user: req.user });
     } catch (err) {
       console.log(err);
@@ -26,11 +28,13 @@ module.exports = {
 
   createPerson: async (req, res) => {
     //creating new record in db
-    console.log(req.file); // Testing multer
     try {
-      await Person.create({
+      const result = await cloudinary.uploader.upload(req.file.path);
+      const person = await Person.create({
         name: req.body.name,
-        picture: req.body.picture,
+        cloudinaryId: result.public_id,
+        // picture: req.body.file,
+        picture: result.secure_url,
         description: req.body.description,
         status: req.body.status,
         hairColor: req.body.hairColor,
@@ -46,6 +50,7 @@ module.exports = {
         race: req.body.race,
         user: req.body.user,
       });
+      res.redirect(`/persons/${person._id}`);
     } catch (err) {
       console.log(err);
     }
@@ -55,7 +60,17 @@ module.exports = {
     const { id } = req.params;
     try {
       const person = await Person.findById(id);
-      res.json(person);
+      const creator = await User.find({ _id: person.user });
+      console.log(
+        { creator },
+        `creator type: ${typeof creator}`,
+        `creator keys: ${Object.keys(creator)}`
+      );
+      res.render("person.ejs", {
+        person: person,
+        user: req.user,
+        creator: creator,
+      });
     } catch (e) {
       console.error(e);
     }
