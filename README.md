@@ -11,7 +11,7 @@ This application was made in collaboration with a team of software engineers:
 
 searching4u is a web application that provides users a space to provide information on missing people, including their last known location with an interactive map.
 
-https://searching-4u.herokuapp.com/
+https://searching4u.onrender.com/
 
 ![searching4u preview](https://raw.githubusercontent.com/ivel6482/ivel6482/main/images/searching4u.gif)
 
